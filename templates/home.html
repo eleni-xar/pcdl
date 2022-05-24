@@ -1,0 +1,12 @@
+{% extends 'site_base.html' %}
+
+{% load static %}
+
+{% block head_title %}Welcome{% endblock head_title%}
+
+{% block page_title %}
+  <h1>Welcome to the Peling Chokhor Digital Library.</h1>
+{% endblock page_title %}
+{% block page_content %}
+  <img src="{% static 'images/from_digitallib_proposal_scale_width_400.png' %}" class="img-fluid img-thumbnail mx-auto" alt="...">
+{% endblock page_content %}
