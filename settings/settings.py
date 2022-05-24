@@ -23,12 +23,14 @@ ALLOWED_HOSTS = []
 # Application definition
 
 INSTALLED_APPS = [
+    'registration',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.sites',
 
     # Third party
     "crispy_forms",
@@ -107,6 +109,15 @@ AUTH_PASSWORD_VALIDATORS = [
 
 AUTH_USER_MODEL = "users.User"
 
+LOGIN_REDIRECT_URL = "/"
+
+ACCOUNT_ACTIVATION_DAYS = 1
+
+INCLUDE_AUTH_URLS = True
+
+INCLUDE_REGISTER_URL = True
+
+REGISTRATION_FORM = 'users.forms.UserCreationForm'
 
 # Internationalization
 # https://docs.djangoproject.com/en/4.0/topics/i18n/
@@ -131,6 +142,8 @@ STATIC_URL = 'static/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 SITE_NAME = 'Peling Chokhor'
+
+SITE_ID = 1
 
 SETTINGS_EXPORT = [
     'LANGUAGE_CODE',
