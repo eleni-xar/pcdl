@@ -1,0 +1,22 @@
+{% extends "registration/registration_base.html" %}
+{% load i18n %}
+
+{% block head_title %}{% trans "Activation email sent" %}{% endblock head_title %}
+
+{% block card_title %}Thank you for signing up to the Peling Chokhor Digital Library{% endblock card_title %}
+
+{% block card_outer_class %}col-7{% endblock card_outer_class %}
+
+
+{% block card_content %}
+  <p>Please check your email to complete the registration process.</p>
+{% endblock card_content %}
+
+{% comment %}
+**registration/registration_complete.html**
+
+Used after successful completion of the registration form. This
+template has no context variables of its own, and should simply inform
+the user that an email containing account-activation information has
+been sent.
+{% endcomment %}
