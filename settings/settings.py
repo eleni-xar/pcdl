@@ -30,6 +30,10 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
+    # Third party
+    "crispy_forms",
+    "crispy_bootstrap5",
+
     # Local
     "users.apps.UsersConfig",
     "core.apps.CoreConfig",
@@ -133,4 +137,9 @@ SETTINGS_EXPORT = [
     'DEBUG',
     'SITE_NAME',
 ]
+
+# django-crispy-forms
+CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
+
+CRISPY_TEMPLATE_PACK = "bootstrap5"
 
