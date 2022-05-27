@@ -3,10 +3,15 @@ Django settings for Peling Chokhor Digital Library
 """
 
 import os
+from environs import Env
+
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, 'subdir').
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
+# Create environment
+env = Env()
+env.read_env()
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.0/howto/deployment/checklist/
