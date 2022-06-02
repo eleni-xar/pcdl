@@ -19,7 +19,7 @@
             {% endif %}
           {% endif %}
         </ul>
-        <ul class="navbar-nav me-5">
+        <ul class="navbar-nav me-3">
           {% if user.is_authenticated %}
             {% if user.is_staff %}
               <li class="nav-item"><a class="nav-link" href="{% url 'admin:index' %}">Admin</a></li>
@@ -31,11 +31,9 @@
               </form>
             </li>
           {% else %}
-            {% if 'register' not in request.path %}
-              {% if 'login' not in request.path  %}
+            {% if 'accounts' not in request.path %}
                 <li class="nav-item"><a class="nav-link" href="{% url 'login' %}">Log In</a></li>
-              {% endif %}
-              <li class="nav-item"><a class="nav-link" href="{% url 'register' %}">Sign Up</a></li>
+                <li class="nav-item"><a class="nav-link" href="{% url 'register' %}">Sign Up</a></li>
             {% endif %}
           {% endif %}
         </ul>
