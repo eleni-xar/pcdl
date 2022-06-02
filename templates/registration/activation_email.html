@@ -1,24 +1,21 @@
-{% load i18n %}
 <!doctype html>
 <html lang="en">
 
 <head>
-    <title>{{ site.name }} {% trans "registration" %}</title>
+    <title>{{ site.name }} registration</title>
 </head>
 
 <body>
 <p>
-    {% blocktrans with site_name=site.name %}
+    {% with site_name=site.name %}
     We have received a request to register this email for an account at
     {{ site_name }}.  If you didn't place this request, please ignore this email
     and your address will be removed from our records.
-    {% endblocktrans %}
+    {% endwith %}
 </p>
 <p>
-    {% blocktrans %}
     Otherwise, to activate this account, please click the following link within the next
     {{ expiration_days }} days:
-    {% endblocktrans %}
 </p>
 
 <p>
@@ -27,10 +24,10 @@
     </a>
 </p>
 <p>
-    {% blocktrans with site_name=site.name %}
+    {% with site_name=site.name %}
     Sincerely,
     {{ site_name }} Management
-    {% endblocktrans %}
+    {% endwith %}
 </p>
 </body>
 

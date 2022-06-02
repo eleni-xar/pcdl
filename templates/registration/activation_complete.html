@@ -10,7 +10,7 @@
 {% block card_content %}
   <p>
       {% if not user.is_authenticated %}
-      <a href="{% url 'login' %}">{% trans "You can now log in to your account." %}</a>
+      <a href="{% url 'login' %}">You can now log in to your account.</a>
       {% else %}
       Visit <a href="{% url 'home' %}">our homepage</a>
       {% endif %}

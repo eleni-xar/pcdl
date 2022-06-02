@@ -1,13 +1,11 @@
-{% load i18n %}
-{% blocktrans with site_name=site.name %}
+{% with site_name=site.name %}
 We have received a request to register this email for an account at
 {{ site_name }}.  If you didn't place this request, please ignore this email
 and your address will be removed from our records.
-{% endblocktrans %}
-{% blocktrans %}
+{% endwith %}
+
 Otherwise, to activate this account, please click the following link within the next
 {{ expiration_days }} days:
-{% endblocktrans %}
 
 {{ request.scheme }}://{{ request.get_host }}{% url 'registration_activate' activation_key %}
 
