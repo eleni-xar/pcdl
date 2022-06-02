@@ -12,19 +12,19 @@ class UsernameField(forms.UsernameField):
         return attrs
 
 
+class CustomPasswordField(CharField):
+
+    def __init__(self, label):
+        super().__init__()
+        self.label=label
+        self.strip=False
+        self.widget=PasswordInput(attrs={"autocomplete": "off"})
+
+
 class UserCreationForm(forms.UserCreationForm):
-    password1 = CharField(
-        label="Password",
-        strip=False,
-        widget=PasswordInput(attrs={"autocomplete": "off"}),
-        # help_text=password_validation.password_validators_help_text_html(),
-    )
-    password2 = CharField(
-        label="Password confirmation",
-        strip=False,
-        widget=PasswordInput(attrs={"autocomplete": "off"}),
-        help_text="Enter the same password as before for verification."
-    )
+
+    password1 = CustomPasswordField(label="Password")
+    password2 = CustomPasswordField(label="Confirm password")
 
     class Meta:
         model = User
