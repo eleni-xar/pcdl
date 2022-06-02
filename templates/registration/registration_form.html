@@ -9,9 +9,10 @@
 {% block card_outer_class %}col-6{% endblock card_outer_class %}
 
 {% block card_content %}
-  <form method="post">
+  <form class="text-below" method="post">
     {% csrf_token %}
     {{ form|crispy }}
-      <button type="submit" class="btn btn-primary">Sign Up</button>
+    <button type="submit" class="btn btn-primary">Sign Up</button>
   </form>
+  <p>Already a user? <a href="{% url 'login' %}">Log in.</a></p>
 {% endblock card_content %}
