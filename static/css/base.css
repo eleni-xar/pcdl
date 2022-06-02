@@ -1,4 +1,7 @@
-
 body {
   max-width: 1200px;
+}
+
+form.text-below {
+  margin-bottom: 1em;
 }
