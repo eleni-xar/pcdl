@@ -9,10 +9,10 @@ Otherwise, to activate this account, please click the following link within the 
 
 {{ request.scheme }}://{{ request.get_host }}{% url 'registration_activate' activation_key %}
 
-{% blocktrans with site_name=site.name %}
+{% with site_name=site.name %}
 Sincerely,
 {{ site_name }} Management
-{% endblocktrans %}
+{% endwith %}
 
 
 {% comment %}
