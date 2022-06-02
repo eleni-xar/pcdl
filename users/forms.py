@@ -38,3 +38,9 @@ class UserChangeForm(forms.UserChangeForm):
         model = User
         fields = "__all__"
         field_classes = {"username": UsernameField}
+
+
+class SetPasswordForm(forms.SetPasswordForm):
+
+    new_password1 = CustomPasswordField(label="New password")
+    new_password2 = CustomPasswordField(label="Confirm new password")

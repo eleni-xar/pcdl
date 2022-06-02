@@ -1,12 +1,12 @@
 from django.contrib.auth import views as auth_views, get_user_model
 from django.contrib.sites.shortcuts import get_current_site
 from django.http import HttpResponseRedirect
-from django.urls import reverse
+from django.urls import reverse, reverse_lazy
 from registration.backends.default import views as reg_views
 from registration import signals
 
 from settings import settings
-from .forms import UserCreationForm
+from .forms import UserCreationForm, SetPasswordForm
 
 
 class LoginView(auth_views.LoginView):
@@ -82,3 +82,9 @@ class RegistrationView(reg_views.RegistrationView):
             new_user.save()
 
         return new_user
+
+
+class PasswordResetConfirmView(auth_views.PasswordResetConfirmView):
+
+    form_class = SetPasswordForm
+    success_url=reverse_lazy('auth_password_reset_complete')
