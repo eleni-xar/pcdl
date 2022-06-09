@@ -88,6 +88,21 @@ class PasswordResetView(auth_views.PasswordResetView):
     form_class = PasswordResetForm
     success_url = reverse_lazy('auth_password_reset_done')
 
+    def form_valid(self, form):
+        opts = {
+            "use_https": self.request.is_secure(),
+            "token_generator": self.token_generator,
+            "from_email": self.from_email,
+            "email_template_name": self.email_template_name,
+            "subject_template_name": self.subject_template_name,
+            "request": self.request,
+            "html_email_template_name": self.html_email_template_name,
+            "extra_email_context": self.extra_email_context,
+            "domain_override": "127.0.0.1:8000" if settings.DEBUG else None,
+        }
+        form.save(**opts)
+        return super(FormView, self).form_valid(form)
+
 
 class PasswordResetConfirmView(auth_views.PasswordResetConfirmView):
 
