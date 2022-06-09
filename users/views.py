@@ -6,7 +6,11 @@ from registration.backends.default import views as reg_views
 from registration import signals
 
 from settings import settings
-from .forms import UserCreationForm, SetPasswordForm
+from .forms import (
+	UserCreationForm,
+	PasswordResetForm,
+	SetPasswordForm
+)
 
 
 class LoginView(auth_views.LoginView):
@@ -77,6 +81,12 @@ class RegistrationView(reg_views.RegistrationView):
             new_user.save()
 
         return new_user
+
+
+class PasswordResetView(auth_views.PasswordResetView):
+
+    form_class = PasswordResetForm
+    success_url = reverse_lazy('auth_password_reset_done')
 
 
 class PasswordResetConfirmView(auth_views.PasswordResetConfirmView):
