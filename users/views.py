@@ -1,4 +1,5 @@
 from django.contrib.auth import views as auth_views, get_user_model
+from django.contrib import messages
 from django.contrib.sites.shortcuts import get_current_site
 from django.http import HttpResponseRedirect
 from django.urls import reverse, reverse_lazy
@@ -107,4 +108,18 @@ class PasswordResetView(auth_views.PasswordResetView):
 class PasswordResetConfirmView(auth_views.PasswordResetConfirmView):
 
     form_class = SetPasswordForm
-    success_url=reverse_lazy('auth_password_reset_complete')
+
+    def get_success_url(self):
+        return (
+            reverse('home')
+            if self.request.user.is_authenticated
+            else reverse('auth_login')
+        )
+
+    def form_valid(self, form):
+        if self.validlink:
+            messages.success(
+                self.request,
+                "Your password was reset successfully. You can now log in."
+            )
+        return super().form_valid(form)
