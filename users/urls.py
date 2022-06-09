@@ -5,7 +5,7 @@ from .views import LoginView,
 )
 
 urlpatterns = [
-    path('login/', LoginView.as_view(), name='login'),
+    path('login/', LoginView.as_view(), name='auth_login'),
     path('register/', RegistrationView.as_view(), name='register'),
     path('password/reset/confirm/<uidb64>/<token>/',
        PasswordResetConfirmView.as_view(),

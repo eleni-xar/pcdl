@@ -82,7 +82,7 @@ class UserTests(TestCase):
 class LoginViewTests(TestCase):
 
     def setUp(self):
-        self.url = reverse('login') + '?next=/wrong/'
+        self.url = reverse('auth_login') + '?next=/wrong/'
 
     def test_redirect_logged_in_user(self):
         """
