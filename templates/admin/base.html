@@ -1,0 +1,127 @@
+{% extends 'admin/base.html' %}
+{% load i18n %}
+{% load static %}
+
+{% block extrahead %}
+
+{{ block.super }}
+
+<style>
+:root {
+  --primary: #0275d8;
+  --secondary: #222529;
+  --accent: #ffffff;
+  --primary-fg: #fff;
+
+  --body-fg: #333;
+  --body-bg: #fff;
+  --body-quiet-color: #666;
+  --body-loud-color: #000;
+
+  --header-color: #ffffff;
+  --header-branding-color: var(--primary);
+  --header-bg: var(--secondary);
+  --header-link-color: #9b9d9e;
+
+  --breadcrumbs-fg: #888;
+  --breadcrumbs-link-fg: var(--body-fg);
+  --breadcrumbs-bg: var(--body-bg);
+
+  --link-fg: var(--primary);
+  --link-hover-color: #163f93;
+  --link-selected-fg: var(--primary);
+
+  --hairline-color: #d8d8d8;
+  --border-color: #ccc;
+
+  --error-fg: #ba2121;
+
+  --message-success-bg: #d4efdf;
+  --message-warning-bg: #fcf3cf;
+  --message-error-bg: #fae5d3;
+
+  --darkened-bg: #f8f8f8; /* A bit darker than --body-bg */
+  --selected-bg: #e4e4e4; /* E.g. selected table cells */
+  --selected-row: #d4d4d4;
+
+  --button-fg: var(--primary-fg);
+  --button-bg: #55565a;
+  --button-hover-bg: #747474;
+  --default-button-bg: var(--primary);
+  --default-button-hover-bg: #163f93;
+  --close-button-bg: #55565a; /* Previously #bbb, contrast 1.92 */
+  --close-button-hover-bg: #747474;
+  --delete-button-bg: #f1c40f;
+  --delete-button-hover-bg: #cea70c;
+
+  --object-tools-fg: var(--button-fg);
+  --object-tools-bg: var(--close-button-bg);
+  --object-tools-hover-bg: var(--close-button-hover-bg);
+}
+
+body {
+    margin: auto;
+    max-width: 1500px;
+}
+
+#user-tools {
+    color: var(--header-link-color);
+    text-transform: none;
+    font-size: 1rem;
+}
+
+#user-tools strong{
+    color: inherit;
+    text-transform: capitalize;
+    font-size: inherit;
+}
+
+#logout-form {
+    display: inline;
+}
+
+#logout-form button {
+    background: none;
+    border: 0;
+    cursor: pointer;
+    font-family: "Roboto","Lucida Grande","DejaVu Sans","Bitstream Vera Sans",Verdana,Arial,sans-serif;
+    color: var(--header-link-color);
+}
+
+#user-tools a:focus, #user-tools a:hover,
+#logout-form button:active, #logout-form button:hover {
+    text-decoration: none;
+    border-bottom-color: var(--primary-fg);
+    color: #c7c8c9;
+}
+
+#user-tools a, #logout-form button {
+    border-bottom: none;
+    font-weight: normal;
+    font-size: 1rem;
+    letter-spacing: 0.5px;
+    text-transform: none;
+}
+
+
+#nav-filter {
+    padding: 11px 5px;
+    margin: 0px 0px 5px 0px;
+}
+
+
+
+
+
+</style>
+{% endblock %}
+
+{% block userlinks %}
+  {% if site_url %}
+      <a href="{{ site_url }}">{% translate 'View site' %}</a>
+  {% endif %}
+  <form id="logout-form" method="post" action="{% url 'auth_logout' %}">
+      {% csrf_token %}
+      <button type="submit">{% translate 'Log out' %}</button>
+  </form>
+{% endblock %}
