@@ -167,6 +167,8 @@ CRISPY_TEMPLATE_PACK = "bootstrap5"
 
 # Email
 
-DEFAULT_FROM_EMAIL = 'funlandwebapps@gmail.com'
+EMAIL_HOST = 'smtp-server'
+EMAIL_PORT = '1025'
+DEFAULT_FROM_EMAIL = "webmaster@localhost"
 
-EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
