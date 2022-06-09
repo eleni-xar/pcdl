@@ -84,7 +84,20 @@ class RegistrationView(reg_views.RegistrationView):
 
         return new_user
 
+        
+class ActivationView(reg_views.ActivationView):
 
+    def get_success_url(self, user):
+        messages.success(
+            self.request,
+            "Your account has been activated."
+        )
+        if self.request.user.is_authenticated:
+            return reverse('home')
+        else:
+            return reverse('auth_login')
+
+        
 class PasswordResetView(auth_views.PasswordResetView):
 
     form_class = PasswordResetForm
