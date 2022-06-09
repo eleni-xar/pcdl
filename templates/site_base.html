@@ -11,27 +11,38 @@
       </button>
       <div class="collapse navbar-collapse" id="navigation-toggle">
         <ul class="navbar-nav me-auto">
-          <li class="nav-item"><a class="nav-link" href="{% url 'home' %}">Home</a></li>
+          <li class="nav-item"><a class="nav-link text-nowrap" href="{% url 'home' %}">Home</a></li>
           {% if user.is_authenticated %}
-            <li class="nav-item"><a class="nav-link" href="#">Browse</a></li>
+            <li class="nav-item"><a class="nav-link text-nowrap" href="#">Browse</a></li>
             {% if user.is_staff %}
-              <li class="nav-item"><a class="nav-link" href="#">Upload</a></li>
+              <li class="nav-item"><a class="nav-link text-nowrap" href="#">Upload</a></li>
             {% endif %}
           {% endif %}
         </ul>
         <ul class="navbar-nav me-3">
           {% if user.is_authenticated %}
-            {% if user.is_staff %}
-              <li class="nav-item"><a class="nav-link" href="{% url 'admin:index' %}">Admin</a></li>
-            {% endif %}
-            <li class="nav-item">
-              <form method="POST" action="{% url 'auth_logout' %}">
-                {% csrf_token %}
-                <button class="btn btn-outline-warning" type="submit">Log Out</button>
-              </form>
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle text-nowrap" data-bs-toggle="dropdown" href="#"
+                role="button" aria-expanded="false" aria-haspopup="true">
+                {{ user.username|capfirst }}
+              </a>
+              <ul class="dropdown-menu dropdown-menu-dark dropdown-menu-end text-nowrap">
+                <li><a class="dropdown-item" href="{% url 'user_profile' username=user.username %}">Profile</a></li>
+                <li><a class="dropdown-item" href="{% url 'auth_password_change' %}">Change Password</a></li>
+                <li><hr class="dropdown-divider"></li>
+                <li>
+                  <form method="POST" action="{% url 'auth_logout' %}">
+                  {% csrf_token %}
+                  <button class="dropdown-item" type="submit">Log Out</button>
+                </form>
+                </li>
+              </ul>
             </li>
+            {% if user.is_staff %}
+              <li class="nav-item"><a class="nav-link text-nowrap" href="{% url 'admin:index' %}">Admin</a></li>
+            {% endif %}
           {% else %}
-            {% if 'accounts' not in request.path %}
+            {% if 'accounts' not in request.path  and 'admin' not in request.path %}
                 <li class="nav-item"><a class="nav-link" href="{% url 'auth_login' %}">Log In</a></li>
                 <li class="nav-item"><a class="nav-link" href="{% url 'register' %}">Sign Up</a></li>
             {% endif %}
