@@ -27,14 +27,11 @@ class LoginView(auth_views.LoginView):
     def get_success_url(self):
         if self.redirect_authenticated_user and self.request.user.is_authenticated:
             return settings.LOGIN_REDIRECT_URL
-        return super().get_success_url()
-
+        return  super().get_default_redirect_url()
 
 
 class RegistrationView(reg_views.RegistrationView):
     form_class = UserCreationForm
-
-    # success_message = 'Welcome. Your sign up was successful. You can now log in to your account.'
 
     def get_success_url(self, user):
         return (
