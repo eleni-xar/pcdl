@@ -12,16 +12,11 @@ from .forms import UserCreationForm, SetPasswordForm
 class LoginView(auth_views.LoginView):
     redirect_authenticated_user = True
 
-    def dispatch(self, request, *args, **kwargs):
+    def get_success_url(self):
         if self.redirect_authenticated_user and self.request.user.is_authenticated:
-            redirect_to = settings.LOGIN_REDIRECT_URL
-            if redirect_to == self.request.path:
-                raise ValueError(
-                    "Redirection loop for authenticated user detected. Check that "
-                    "your LOGIN_REDIRECT_URL doesn't point to a login page."
-                )
-            return HttpResponseRedirect(redirect_to)
-        return super().dispatch(request, *args, **kwargs)
+            return settings.LOGIN_REDIRECT_URL
+        return super().get_success_url()
+
 
 
 class RegistrationView(reg_views.RegistrationView):
