@@ -1,0 +1,13 @@
+{% extends 'registration/registration_base.html' %}
+
+{% load crispy_forms_tags %}
+
+{% block head_title %}Log In{% endblock head_title %}
+
+{% block card_title %}{{ view.title }}{% endblock card_title %}
+
+{% block card_outer_class %}col-5{% endblock card_outer_class %}
+
+{% block card_content %}
+  {% crispy form %}
+{% endblock card_content %}

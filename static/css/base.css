@@ -5,3 +5,7 @@ body {
 form.text-below {
   margin-bottom: 1em;
 }
+
+.my-btn-light {
+  background-color: #dddddd;
+}

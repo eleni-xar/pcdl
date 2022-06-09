@@ -6,6 +6,8 @@ from .views import (
     PasswordChangeView,
     PasswordResetConfirmView,
     PasswordResetView,
+    UserDetailView,
+    UserUpdateView,
 )
 
 urlpatterns = [
@@ -19,4 +21,7 @@ urlpatterns = [
          PasswordResetConfirmView.as_view(),
          name='auth_password_reset_confirm'),
     path('password/change/', PasswordChangeView.as_view(), name='auth_password_change'),
+    path('profile/<slug:username>/detail', UserDetailView.as_view(), name='user_profile'),
+    path('profile/<slug:username>/update', UserUpdateView.as_view(), name='edit_user_profile'),
+
 ]

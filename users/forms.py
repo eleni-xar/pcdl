@@ -1,6 +1,10 @@
 from django.contrib.auth import get_user_model, forms
 from django.core.exceptions import ValidationError
-from django.forms import CharField, PasswordInput
+from django.forms import CharField, EmailField, EmailInput, ModelForm, PasswordInput
+from crispy_forms.helper import FormHelper
+from crispy_forms.bootstrap import FormActions, StrictButton
+from crispy_forms.layout import HTML, Layout, Fieldset
+
 
 User = get_user_model()
 
@@ -60,3 +64,38 @@ class SetPasswordForm(forms.SetPasswordForm):
 class PasswordChangeForm(SetPasswordForm, forms.PasswordChangeForm):
 
     old_password = CustomPasswordField(label="Old password")
+
+
+class UserProfileForm(ModelForm):
+
+    class Meta:
+        model = User
+        fields = ("username", "email")
+        field_classes = {"username": UsernameField}
+
+    def __init__(self, disabled=None, *args, **kwargs):
+
+        self.disabled = disabled
+        super().__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.form_id = 'id-profileForm'
+        if self.disabled:
+            for field in self.fields:
+                self.fields[field].widget.attrs["disabled"] = "disabled"
+        self.helper.layout = Layout(
+            Fieldset(
+                '{% if form.disabled %}Welcome {{user.username}}{% else %}Edit your profile:{% endif %}',
+                'username',
+                'email',
+            ),
+            FormActions(
+                HTML(
+                    """
+                    <a class="btn btn-primary"  href="{% url 'edit_user_profile' username=user.username %}">Edit Profile</a>
+                    <a class="btn my-btn-light"  href="{% url 'home' %}">Homepage</a>
+                    """
+                )
+                if self.disabled else
+                StrictButton('Save Changes', type='submit', css_class="btn-primary")
+            )
+        )

@@ -1,9 +1,12 @@
 from django.contrib.auth import views as auth_views, get_user_model
 from django.contrib import messages
+from django.contrib.messages.views import SuccessMessageMixin
 from django.contrib.sites.shortcuts import get_current_site
 from django.dispatch import receiver
 from django.http import HttpResponseRedirect
 from django.urls import reverse, reverse_lazy
+from django.views.generic import DetailView, UpdateView, FormView
+from django.views.generic.detail import SingleObjectMixin
 from registration.backends.default import views as reg_views
 from registration import signals
 
@@ -13,6 +16,8 @@ from .forms import (
     PasswordResetForm,
     SetPasswordForm,
     UserChangeForm,
+    UserCreationForm,
+    UserProfileForm,
 )
 
 
@@ -161,3 +166,41 @@ class PasswordChangeView(auth_views.PasswordChangeView):
         messages.success(self.request, "Password successfully changed!")
         return super().form_valid(form)
 
+
+class ProfileMixin(SingleObjectMixin):
+
+    slug_field = "username"
+    slug_url_kwarg = "username"
+    template_name = 'registration/user_form.html'
+
+    def get_object(self):
+        return self.request.user
+
+
+
+class UserDetailView(ProfileMixin, DetailView):
+
+    model = get_user_model()
+
+    def get_context_data(self, **kwargs):
+
+        context = super().get_context_data(**kwargs)
+        context["form"] = UserProfileForm(
+            instance=context["object"],
+            disabled=True,
+        )
+        return context
+
+
+class UserUpdateView(ProfileMixin, SuccessMessageMixin, UpdateView):
+
+    form_class = UserProfileForm
+    success_message = 'Your profile has been updated.'
+
+    def get_success_url(self):
+        return reverse("user_profile", args=[self.object.username])
+
+    def get_form_kwargs(self):
+        kwargs = super().get_form_kwargs()
+        kwargs["disabled"] = False
+        return kwargs
