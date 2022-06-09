@@ -8,10 +8,10 @@ from registration import signals
 
 from settings import settings
 from .forms import (
-	UserCreationForm,
-	PasswordResetForm,
-	SetPasswordForm,
-	UserChangeForm,
+    PasswordChangeForm,
+    PasswordResetForm,
+    SetPasswordForm,
+    UserChangeForm,
 )
 
 
