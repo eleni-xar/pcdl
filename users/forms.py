@@ -1,5 +1,5 @@
-from django.contrib.auth import get_user_model #, password_validation
-from django.contrib.auth import forms
+from django.contrib.auth import get_user_model, forms
+from django.core.exceptions import ValidationError
 from django.forms import CharField, PasswordInput
 
 User = get_user_model()
@@ -38,6 +38,17 @@ class UserChangeForm(forms.UserChangeForm):
         model = User
         fields = "__all__"
         field_classes = {"username": UsernameField}
+
+
+class PasswordResetForm(forms.PasswordResetForm):
+
+    def clean_email(self):
+        data = self.cleaned_data['email']
+
+        if not User.objects.filter(email=data).exists():
+            raise ValidationError("This email does not exist in our database")
+
+        return data
 
 
 class SetPasswordForm(forms.SetPasswordForm):
