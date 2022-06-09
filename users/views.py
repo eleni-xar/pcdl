@@ -10,7 +10,8 @@ from settings import settings
 from .forms import (
 	UserCreationForm,
 	PasswordResetForm,
-	SetPasswordForm
+	SetPasswordForm,
+	UserChangeForm,
 )
 
 
@@ -123,3 +124,14 @@ class PasswordResetConfirmView(auth_views.PasswordResetConfirmView):
                 "Your password was reset successfully. You can now log in."
             )
         return super().form_valid(form)
+
+
+class PasswordChangeView(auth_views.PasswordChangeView):
+
+    form_class = PasswordChangeForm
+    success_url = reverse_lazy("home")
+
+    def form_valid(self, form):
+        messages.success(self.request, "Password successfully changed!")
+        return super().form_valid(form)
+

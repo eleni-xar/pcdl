@@ -55,3 +55,8 @@ class SetPasswordForm(forms.SetPasswordForm):
 
     new_password1 = CustomPasswordField(label="New password")
     new_password2 = CustomPasswordField(label="Confirm new password")
+
+
+class PasswordChangeForm(SetPasswordForm, forms.PasswordChangeForm):
+
+    old_password = CustomPasswordField(label="Old password")
