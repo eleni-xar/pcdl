@@ -1,6 +1,7 @@
 from django.contrib.auth import views as auth_views, get_user_model
 from django.contrib import messages
 from django.contrib.sites.shortcuts import get_current_site
+from django.dispatch import receiver
 from django.http import HttpResponseRedirect
 from django.urls import reverse, reverse_lazy
 from registration.backends.default import views as reg_views
@@ -84,7 +85,15 @@ class RegistrationView(reg_views.RegistrationView):
 
         return new_user
 
-        
+
+@receiver(signals.user_activated)
+def my_handler(sender, **kwargs):
+    user = kwargs.get('user', None)
+    if user:
+        user.registrationprofile.activation_key=''
+        user.registrationprofile.save()
+
+
 class ActivationView(reg_views.ActivationView):
 
     def get_success_url(self, user):
@@ -97,7 +106,11 @@ class ActivationView(reg_views.ActivationView):
         else:
             return reverse('auth_login')
 
-        
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["user"] = self.request.user
+        return context
+
 class PasswordResetView(auth_views.PasswordResetView):
 
     form_class = PasswordResetForm
