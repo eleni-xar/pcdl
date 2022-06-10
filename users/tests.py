@@ -84,11 +84,11 @@ class LoginViewTests(TestCase):
     def setUp(self):
         self.url = reverse('auth_login') + '?next=/wrong/'
 
-    def test_redirect_logged_in_user(self):
+    def test_login_redirect(self):
         """
         next should work only with users who are not already logged in.
         In this test the value of next is a non existing page so 404 is returned
-        the first time. Whe the user tries to log in again, they are redirected
+        the first time. When the user tries to log in again, they are redirected
         to the home page.
         """
         User.objects.create_user(

@@ -1,10 +1,14 @@
-from django.contrib.auth import views as auth_views, get_user_model
+from django.contrib.auth import views as auth_views, get_user_model, REDIRECT_FIELD_NAME
 from django.contrib import messages
 from django.contrib.messages.views import SuccessMessageMixin
 from django.contrib.sites.shortcuts import get_current_site
 from django.dispatch import receiver
 from django.http import HttpResponseRedirect
 from django.urls import reverse, reverse_lazy
+from django.utils.decorators import method_decorator
+from django.views.decorators.cache import never_cache
+from django.views.decorators.csrf import csrf_protect
+from django.views.decorators.debug import sensitive_post_parameters
 from django.views.generic import DetailView, UpdateView, FormView
 from django.views.generic.detail import SingleObjectMixin
 from registration.backends.default import views as reg_views
@@ -24,10 +28,21 @@ from .forms import (
 class LoginView(auth_views.LoginView):
     redirect_authenticated_user = True
 
-    def get_success_url(self):
+
+    @method_decorator(sensitive_post_parameters())
+    @method_decorator(csrf_protect)
+    @method_decorator(never_cache)
+    def dispatch(self, request, *args, **kwargs):
         if self.redirect_authenticated_user and self.request.user.is_authenticated:
-            return settings.LOGIN_REDIRECT_URL
-        return  super().get_default_redirect_url()
+            redirect_to = settings.LOGIN_REDIRECT_URL
+            if redirect_to == self.request.path:
+                raise ValueError(
+                    "Redirection loop for authenticated user detected. Check that "
+                    "your LOGIN_REDIRECT_URL doesn't point to a login page."
+                )
+            return HttpResponseRedirect(redirect_to)
+        return super().dispatch(request, *args, **kwargs)
+
 
 
 class RegistrationView(reg_views.RegistrationView):
