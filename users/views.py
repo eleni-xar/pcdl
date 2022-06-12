@@ -122,13 +122,6 @@ class ActivationView(reg_views.ActivationView):
         context["profile"] = RegistrationProfile.objects.filter(activation_key=activation_key).first()
         return context
 
-    def get(self, request, *args, **kwargs):
-        activation_key = self.get_context_data(**kwargs)["activation_key"]
-        profile = RegistrationProfile.objects.filter(activation_key=activation_key).first()
-        if profile and profile.activated:
-            return self.render_to_response(self.get_context_data(**kwargs))
-        return super().get(request, *args, **kwargs)
-
 
 class PasswordResetView(auth_views.PasswordResetView):
 

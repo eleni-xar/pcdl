@@ -242,16 +242,6 @@ class ActivationViewTests(TestCase):
         self.assertRedirects(activation_response1, reverse('auth_login'))
         self.assertContains(activation_response1, 'Your account has been activated')
 
-        """
-        Second time the activation key is used, user is redirected to activate.html,
-        and is prompted to login.
-        """
-
-        activation_response2 = self.activation_response(profile.activation_key)
-        self.assertEqual(activation_response2.status_code, 200)
-        self.assertTemplateUsed(activation_response2, 'registration/activate.html')
-        self.assertContains(activation_response2, "log in")
-
     def test_failed_activation(self):
         """
         After the key is expired, user is redirected to activate.html,
