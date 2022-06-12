@@ -1,6 +1,8 @@
 from django.contrib.auth import get_user_model
-from django.test import TestCase
+from django.core import mail
+from django.test import TestCase, TransactionTestCase
 from django.urls import reverse, resolve
+from registration.models import RegistrationProfile
 
 from .forms import UserCreationForm
 from .views import RegistrationView
@@ -117,81 +119,76 @@ class LoginViewTests(TestCase):
         self.assertRedirects(response2, reverse("home"))
 
 
-class SignupViewTests(TestCase):
-
-    username = 'testuser'
-    email = 'test@test.org'
+class RegistrationViewGetTests(TestCase):
 
     def setUp(self):
-        self.url = reverse('register')
-        self.response = self.client.get(self.url)
+        self.url = reverse('registration_register')
+        self.response_get = self.client.get(self.url)
 
     def test_register_template(self):
-        self.assertEqual(self.response.status_code, 200)
-        self.assertTemplateUsed(self.response, 'registration/registration_form.html')
-        self.assertContains(self.response, 'open an account')
-        self.assertNotContains(self.response, 'Log Out')
-
-    def test_register_view(self):
-        view = resolve('/accounts/register/')
-        self.assertEqual(
-            view.func.__name__,
-            RegistrationView.as_view().__name__
-        )
+        self.assertEqual(self.response_get.status_code, 200)
+        self.assertTemplateUsed(self.response_get, 'registration/registration_form.html')
+        self.assertContains(self.response_get, 'open an account')
+        self.assertNotContains(self.response_get, 'Log Out')
 
     def test_register_form(self):
-        form = self.response.context.get('form')
+        form = self.response_get.context.get('form')
         self.assertIsInstance(form, UserCreationForm)
-        self.assertContains(self.response, 'csrfmiddlewaretoken')
+        self.assertContains(self.response_get, 'csrfmiddlewaretoken')
+
+
+class RegistrationViewPostTests(TransactionTestCase):
+
+    def setUp(self):
+        self.url = reverse('registration_register')
+        self.data = {
+            'username':username,
+            'password1':password,
+            'password2':password,
+        }
+
 
     def test_register_form_no_email(self):
-        # possible to sign up without email
-        response = self.client.post(
-            self.url,
-            {
-                'username':self.username,
-                'password1':'somepass',
-                'password2':'somepass'
-            },
-            follow=True
-        )
-        self.assertEqual(response.redirect_chain, [('/accounts/login/', 302)])
-        self.assertEqual(User.objects.all().count(), 1)
-        self.assertTrue(User.objects.filter(username=self.username).exists())
-
-    def test_register_form_with_email(self):
-        response = self.client.post(
-            self.url,
-            {
-                'username':self.username,
-                'email':self.email,
-                'password1':'somepass',
-                'password2':'somepass'
-            },
-            follow=True
-        )
-        self.assertEqual(response.redirect_chain, [('/accounts/register/complete/', 302)])
+        """
+        possible to sign up without email; one active user is created;
+        no email is sent; user is redirected to login.
+        """
+        response = self.client.post(self.url, data=self.data)
+        self.assertRedirects(response, reverse('auth_login'))
         self.assertEqual(User.objects.all().count(), 1)
         user = User.objects.all()[0]
-        self.assertEqual(user.username, self.username)
-        self.assertEqual(user.email, self.email)
+        self.assertEqual(user.username, username)
+        self.assertTrue(user.check_password(password))
+        self.assertTrue(user.is_active)
+
+    def test_register_form_with_email(self):
+        """
+        sign up with email; user is redirected to registration complete message;
+        inactive user i created; an email is sent;
+        """
+        self.data["email"] = email
+        response = self.client.post(self.url, data=self.data)
+        self.assertRedirects(response, reverse('registration_complete'))
+        self.assertEqual(User.objects.count(), 1)
+        user = User.objects.all()[0]
+        self.assertEqual(user.username, username)
+        self.assertEqual(user.email, email)
+        self.assertTrue(user.check_password(password))
+        self.assertFalse(user.is_active)
+        self.assertEqual(RegistrationProfile.objects.count(), 1)
+        self.assertEqual(len(mail.outbox), 1)
 
     def test_register_form_same_username(self):
+        """
+        Fail to sign up user if the provided username is taken.
+        """
         response1 = self.client.post(
             self.url,
-            {
-                'username':self.username,
-                'password1':'somepass',
-                'password2':'somepass'
-            },
+            data=self.data,
         )
         response2 = self.client.post(
             self.url,
-            {
-                'username':self.username,
-                'password1':'somepass',
-                'password2':'somepass'
-            },
+            data=self.data,
         )
         self.assertEqual(User.objects.all().count(), 1)
         self.assertContains(response2, 'already exists')
