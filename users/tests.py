@@ -1,11 +1,13 @@
+from datetime import timedelta
+
 from django.contrib.auth import get_user_model
 from django.core import mail
-from django.test import TestCase, TransactionTestCase
+from django.test import Client, TestCase, TransactionTestCase
 from django.urls import reverse, resolve
 from registration.models import RegistrationProfile
 
 from .forms import UserCreationForm
-from .views import RegistrationView
+from settings import settings
 
 User = get_user_model()
 
@@ -192,3 +194,64 @@ class RegistrationViewPostTests(TransactionTestCase):
         )
         self.assertEqual(User.objects.all().count(), 1)
         self.assertContains(response2, 'already exists')
+
+
+class ActivationViewTests(TestCase):
+
+    @classmethod
+    def setUpTestData(cls):
+        """
+        Register a user. Used for both tests.
+        """
+        myclient = Client()
+        myclient.post(
+            reverse("register"),
+            {
+                'username':username,
+                'email':email,
+                'password1':password,
+                'password2':password
+            },
+        )
+
+    def activation_response(self, activation_key):
+        return self.client.get(
+            reverse(
+                'registration_activate',
+                args=[],
+                kwargs={'activation_key': activation_key}
+                ),
+            follow=True
+            )
+
+    def test_activation(self):
+
+        user = User.objects.filter(username=username).first()
+        profile = RegistrationProfile.objects.filter(user=user).first()
+
+        activation_response1 = self.activation_response(profile.activation_key)
+
+        activated_user = User.objects.filter(username=username).first()
+        self.assertTrue(activated_user.is_active)
+        self.assertTrue(RegistrationProfile.objects.filter(user=activated_user).first().activated)
+
+        self.assertRedirects(activation_response1, reverse('auth_login'))
+        self.assertContains(activation_response1, 'Your account has been activated')
+
+        activation_response2 = self.activation_response(profile.activation_key)
+        self.assertEqual(activation_response2.status_code, 200)
+        self.assertTemplateUsed(activation_response2, 'registration/activate.html')
+        self.assertContains(activation_response2, "log in")
+
+    def test_failed_activation(self):
+
+        user = User.objects.filter(username=username).first()
+        user.date_joined -= timedelta(
+            days=settings.ACCOUNT_ACTIVATION_DAYS)
+        user.save()
+        profile = RegistrationProfile.objects.filter(user=user).first()
+
+        activation_response = self.activation_response(profile.activation_key)
+        self.assertEqual(activation_response.status_code, 200)
+        self.assertTemplateUsed(activation_response, 'registration/activate.html')
+        self.assertContains(activation_response, "try again")
