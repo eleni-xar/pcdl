@@ -7,20 +7,24 @@ from .views import RegistrationView
 
 User = get_user_model()
 
+username = 'testuser'
+email = 'test@test.org'
+password = 'somepass'
+
 class UserTests(TestCase):
 
     def test_create_user(self):
 
         # Successfully create user
         user = User.objects.create_user(
-            username="user",
-            email="user@test.org",
-            password="userpass"
+            username=username,
+            email=email,
+            password=password,
         )
 
-        self.assertEqual(user.username, "user")
-        self.assertEqual(user.email, "user@test.org")
-        self.assertTrue(user.check_password("userpass"))
+        self.assertEqual(user.username, username)
+        self.assertEqual(user.email, email)
+        self.assertTrue(user.check_password(password))
         self.assertTrue(user.is_active)
         self.assertFalse(user.is_staff)
         self.assertFalse(user.is_superuser)
@@ -29,20 +33,19 @@ class UserTests(TestCase):
         try:
             with transaction.atomic():
                 user2 = User.objects.create_user(
-                    username="user",
-                    email="user2@test.org",
-                    password="userpass"
+                    username=username,
+                    password=password
                 )
         except:
             pass
 
-        self.assertFalse(User.objects.filter(email="user2@test.org").exists())
+        self.assertEqual(User.objects.all().count(), 1)
 
         # Allow user with same email
         user2 = User.objects.create_user(
             username="user2",
-            email="user@test.org",
-            password="userpass"
+            email=email,
+            password=password
         )
 
         self.assertEqual(user.email, user2.email)
@@ -52,14 +55,14 @@ class UserTests(TestCase):
 
         # Succesfully create superuser.
         user = User.objects.create_superuser(
-            username="su",
-            email="su@test.org",
-            password="sutesting"
+            username=username,
+            email=email,
+            password=password
         )
 
-        self.assertEqual(user.username, "su")
-        self.assertEqual(user.email, "su@test.org")
-        self.assertTrue(user.check_password("sutesting"))
+        self.assertEqual(user.username, username)
+        self.assertEqual(user.email, email)
+        self.assertTrue(user.check_password(password))
         self.assertTrue(user.is_active)
         self.assertTrue(user.is_staff)
         self.assertTrue(user.is_superuser)
@@ -68,14 +71,12 @@ class UserTests(TestCase):
         try:
             with transaction.atomic():
                 user2 = User.objects.create_superuser(
-                    username="su",
-                    email="su2@test.org",
-                    password="sutesting"
+                    username=username,
+                    password=password
                 )
         except:
             pass
 
-        self.assertFalse(User.objects.filter(email="su2@test.org").exists())
         self.assertEqual(User.objects.all().count(), 1)
 
 
@@ -92,14 +93,14 @@ class LoginViewTests(TestCase):
         to the home page.
         """
         User.objects.create_user(
-            username='testuser',
-            password='somepass'
+            username=username,
+            password=password
         )
         response1 = self.client.post(
             self.url,
             {
-                'username':'testuser',
-                'password':'somepass',
+                'username':username,
+                'password':password,
             },
             follow=True
         )
@@ -108,14 +109,12 @@ class LoginViewTests(TestCase):
         response2 = self.client.post(
             self.url,
             {
-                'username':'testuser',
-                'password':'somepass',
+                'username':username,
+                'password':password,
             },
             follow=True
         )
-        self.assertEqual(response2.redirect_chain, [('/', 302)])
-        self.assertEqual(response2.status_code, 200)
-        self.assertContains(response2, 'Welcome')
+        self.assertRedirects(response2, reverse("home"))
 
 
 class SignupViewTests(TestCase):
