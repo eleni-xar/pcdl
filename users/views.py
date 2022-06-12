@@ -12,6 +12,7 @@ from django.views.decorators.debug import sensitive_post_parameters
 from django.views.generic import DetailView, UpdateView, FormView
 from django.views.generic.detail import SingleObjectMixin
 from registration.backends.default import views as reg_views
+from registration.models import RegistrationProfile
 from registration import signals
 
 from settings import settings
@@ -103,14 +104,6 @@ class RegistrationView(reg_views.RegistrationView):
         return new_user
 
 
-@receiver(signals.user_activated)
-def my_handler(sender, **kwargs):
-    user = kwargs.get('user', None)
-    if user:
-        user.registrationprofile.activation_key=''
-        user.registrationprofile.save()
-
-
 class ActivationView(reg_views.ActivationView):
 
     def get_success_url(self, user):
@@ -125,8 +118,17 @@ class ActivationView(reg_views.ActivationView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context["user"] = self.request.user
+        activation_key = context['activation_key']
+        context["profile"] = RegistrationProfile.objects.filter(activation_key=activation_key).first()
         return context
+
+    def get(self, request, *args, **kwargs):
+        activation_key = self.get_context_data(**kwargs)["activation_key"]
+        profile = RegistrationProfile.objects.filter(activation_key=activation_key).first()
+        if profile and profile.activated:
+            return self.render_to_response(self.get_context_data(**kwargs))
+        return super().get(request, *args, **kwargs)
+
 
 class PasswordResetView(auth_views.PasswordResetView):
 

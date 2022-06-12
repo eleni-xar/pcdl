@@ -7,13 +7,13 @@
 {% block card_outer_class %}col-4{% endblock card_outer_class %}
 
 {% block card_content %}
-  {% if user.is_active %}
+  {% if profile.activated%}
   <p>
       This key has already been used and your account is active. You can now <a href="{% url 'auth_login' %}">log in.</a>
   </p>
   {% else %}
   <p>
-      Please <a href="{% url 'register' %}">try again.</a>
+      Please <a href="{% url 'register' %}">try again.{{profile}}</a>
   </p>
   {% endif %}
 {% endblock card_content %}
