@@ -171,11 +171,7 @@ class PasswordResetConfirmView(auth_views.PasswordResetConfirmView):
     form_class = SetPasswordForm
 
     def get_success_url(self):
-        return (
-            reverse('home')
-            if self.request.user.is_authenticated
-            else reverse('auth_login')
-        )
+        return reverse('auth_login')
 
     def form_valid(self, form):
         if self.validlink:

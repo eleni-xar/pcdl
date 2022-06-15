@@ -9,6 +9,7 @@ from registration.models import RegistrationProfile
 
 from .forms import (
     PasswordResetForm,
+    SetPasswordForm,
     UserCreationForm,
 )
 from settings import settings
@@ -370,3 +371,73 @@ class PasswordResetViewPostTests(TransactionTestCase):
         )
         self.assertEqual(len(mail.outbox), 1)
         self.assertTrue(re.search('127.0.0.1:8000/', mail.outbox[0].body))
+
+
+class PasswordResetConfirmViewGetTests(TestCase):
+
+    def read_registration_email(self, email):
+        urlmatch = re.search(r"https?://[^/]*(/.*reset/\S*)", email.body)
+        self.assertIsNotNone(urlmatch, "No URL found in sent email")
+        post_url = '/'.join(urlmatch[0].split('/')[:-2])  + "/set-password/"
+        return post_url, urlmatch[1]
+
+    def setUp(self):
+
+        self.user = User.objects.create_user(
+                                username=username,
+                                email=email,
+                                password=password,
+                            )
+        myclient = Client()
+        myclient.post(
+            reverse("auth_password_reset"),
+            data={'email':email}
+        )
+        self.email = mail.outbox[0]
+        self.post_url, self.path = self.read_registration_email(self.email)
+        self.response = self.client.get(self.path, follow=True)
+
+    def test_password_reset_confirm_get(self):
+        self.assertEqual(self.response.status_code, 200)
+        self.assertTemplateUsed(self.response, 'registration/password_reset_confirm.html')
+        self.assertContains(self.response, 'Please reset your password')
+        form = self.response.context.get('form')
+        self.assertIsInstance(form, SetPasswordForm)
+
+    def test_password_reset_authenticated_user(self):
+        """
+        If the link is used after user is logged in, the user sees a message
+        informing them they are logged in instead of the form.
+        """
+        self.client.force_login(self.user)
+        response = self.client.get(self.path, follow=True)
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "You are already logged in")
+        self.assertNotContains(response, "Reset my password")
+
+    def test_password_reset_not_authenticated_user(self):
+        """
+        When link is used for the first time user, the user can reset
+        their password and are then redirected to login with relevant message.
+        """
+        response = self.client.post(
+                                self.post_url,
+                                data={
+                                    "new_password1": "somethingnew",
+                                    "new_password2": "somethingnew",
+                                },
+                                follow=True
+                           )
+
+        self.assertRedirects(response, reverse('auth_login'))
+        self.assertContains(response, "Your password was reset successfully")
+        user = User.objects.filter(username=username).first()
+        self.assertTrue(user.check_password("somethingnew"))
+
+        """
+        When link is used for the second time the user sees a message
+        informing them thelink is invalid
+        """
+        response = self.client.get(self.path, follow=True)
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Invalid link")
