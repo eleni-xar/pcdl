@@ -7,7 +7,7 @@ urlpatterns = [
 
     # User management
     path('accounts/', include('users.urls')),
-    path('accounts/', include('registration.backends.default.urls')),
+
     # Core
     path('', include('core.urls')),
 ]
