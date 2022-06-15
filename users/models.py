@@ -1,4 +1,12 @@
-from django.db.models import BooleanField, CharField, DateTimeField, EmailField
+import uuid
+
+from django.db.models import (
+    BooleanField,
+    CharField,
+    DateTimeField,
+    EmailField,
+    UUIDField,
+)
 from django.contrib.auth.base_user import AbstractBaseUser
 from django.contrib.auth.models import PermissionsMixin, UserManager
 from django.utils import timezone
@@ -7,6 +15,11 @@ from django.core.mail import send_mail
 
 
 class User(AbstractBaseUser, PermissionsMixin):
+    id = UUIDField(
+        primary_key=True,
+        editable=False,
+        default=uuid.uuid4
+    )
     username = CharField(
         max_length=150,
         unique=True,
