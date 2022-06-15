@@ -8,6 +8,7 @@ from django.urls import reverse, resolve
 from registration.models import RegistrationProfile
 
 from .forms import (
+    PasswordChangeForm,
     PasswordResetForm,
     SetPasswordForm,
     UserCreationForm,
@@ -462,3 +463,34 @@ class PasswordResetDoneViewTests(TestCase):
         self.client.force_login(user)
         response = self.client.get(url)
         self.assertRedirects(response, reverse('home'))
+
+
+class PasswordChangeViewTests(TestCase):
+
+    def setUp(self):
+        self.user = User.objects.create_user(username=username, password=password)
+        self.client.login(username=username, password=password)
+        self.url = reverse('auth_password_change')
+        self.response = self.client.get(self.url)
+
+    def test_password_change_template(self):
+        self.assertEqual(self.response.status_code, 200)
+        self.assertTemplateUsed(self.response, 'registration/password_change_form.html')
+        form = self.response.context.get('form')
+        self.assertIsInstance(form, PasswordChangeForm)
+        self.assertContains(self.response, 'Change password')
+
+    def test_password_change_post(self):
+        response = self.client.post(
+                                        self.url,
+                                        data={
+                                            "old_password": password,
+                                            "new_password1": "somethingnew",
+                                            "new_password2": "somethingnew",
+                                        },
+                                        follow=True
+                                    )
+        user = User.objects.filter(username=username).first()
+        self.assertTrue(user.check_password("somethingnew"))
+        self.assertRedirects(response, reverse("home"))
+        self.assertContains(response, "Password successfully changed")
