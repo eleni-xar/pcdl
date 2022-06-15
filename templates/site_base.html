@@ -27,7 +27,7 @@
                 {{ user.username|capfirst }}
               </a>
               <ul class="dropdown-menu dropdown-menu-dark dropdown-menu-end text-nowrap">
-                <li><a class="dropdown-item" href="{% url 'user_profile' username=user.username %}">Profile</a></li>
+                <li><a class="dropdown-item" href="{% url 'user_profile' user.id %}">Profile</a></li>
                 <li><a class="dropdown-item" href="{% url 'auth_password_change' %}">Change Password</a></li>
                 <li><hr class="dropdown-divider"></li>
                 <li>
@@ -51,7 +51,6 @@
 
       </div>
     </nav>
-  </div>
 {% endblock nav %}
 
 {% block content %}

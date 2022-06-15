@@ -12,6 +12,7 @@ from .forms import (
     PasswordResetForm,
     SetPasswordForm,
     UserCreationForm,
+    UserProfileForm,
 )
 from settings import settings
 
@@ -494,3 +495,61 @@ class PasswordChangeViewTests(TestCase):
         self.assertTrue(user.check_password("somethingnew"))
         self.assertRedirects(response, reverse("home"))
         self.assertContains(response, "Password successfully changed")
+
+class UserDetailViewTests(TestCase):
+
+    def setUp(self):
+        self.user = User.objects.create_user(username=username, password=password)
+        self.user_id = self.user.id
+        self.client.login(username=username, password=password)
+        self.url = reverse('user_profile', args=[self.user_id])
+        self.response = self.client.get(self.url)
+
+    def test_password_change_template(self):
+        self.assertEqual(self.response.status_code, 200)
+        self.assertTemplateUsed(self.response, 'registration/user_form.html')
+        form = self.response.context.get('form')
+        self.assertIsInstance(form, UserProfileForm)
+        self.assertTrue(form.disabled)
+        self.assertContains(self.response, 'Welcome ' + username)
+        self.assertContains(
+            self.response,
+            "href=\"{}\">Edit Profile</a>".format(
+                            reverse('edit_user_profile', args=[self.user_id])
+                        )
+        )
+
+
+class UserUpdateViewTests(TestCase):
+
+    def setUp(self):
+        self.user = User.objects.create_user(username=username, password=password)
+        self.user_id = self.user.id
+        self.client.login(username=username, password=password)
+        self.url = reverse('edit_user_profile', args=[self.user.id])
+        self.response = self.client.get(self.url)
+
+    def test_password_change_template(self):
+        self.assertEqual(self.response.status_code, 200)
+        self.assertTemplateUsed(self.response, 'registration/user_form.html')
+        form = self.response.context.get('form')
+        self.assertIsInstance(form, UserProfileForm)
+        self.assertFalse(form.disabled)
+        self.assertContains(self.response, 'Edit your profile')
+
+    def test_update_user_post(self):
+        response = self.client.post(
+                                        self.url,
+                                        data={
+                                            "username": username + 'a',
+                                            "email": 'a' + email ,
+                                        },
+                                        follow=True
+                                    )
+        self.assertFalse(User.objects.filter(username=username).exists())
+        self.assertFalse(User.objects.filter(email=email).exists())
+        user = User.objects.filter(id=self.user_id).first()
+        self.assertEqual(user.username, username + 'a')
+        self.assertEqual(user.email, 'a' + email)
+        self.assertRedirects(response, reverse('user_profile', args=[self.user_id]))
+        self.assertContains(response, "Your profile has been updated")

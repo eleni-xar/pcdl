@@ -201,8 +201,6 @@ class PasswordChangeView(auth_views.PasswordChangeView):
 
 class ProfileMixin(SingleObjectMixin):
 
-    slug_field = "username"
-    slug_url_kwarg = "username"
     template_name = 'registration/user_form.html'
 
     def get_object(self):
@@ -229,7 +227,7 @@ class UserUpdateView(LoginRequiredMixin, ProfileMixin, SuccessMessageMixin, Upda
     success_message = 'Your profile has been updated.'
 
     def get_success_url(self):
-        return reverse("user_profile", args=[self.object.username])
+        return reverse("user_profile", args=[self.object.id])
 
     def get_form_kwargs(self):
         kwargs = super().get_form_kwargs()

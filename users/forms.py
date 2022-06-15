@@ -91,7 +91,7 @@ class UserProfileForm(ModelForm):
             FormActions(
                 HTML(
                     """
-                    <a class="btn btn-primary"  href="{% url 'edit_user_profile' username=user.username %}">Edit Profile</a>
+                    <a class="btn btn-primary"  href="{% url 'edit_user_profile' user.id %}">Edit Profile</a>
                     <a class="btn my-btn-light"  href="{% url 'home' %}">Homepage</a>
                     """
                 )
