@@ -124,19 +124,19 @@ class LoginViewTests(TestCase):
 class RegistrationViewGetTests(TestCase):
 
     def setUp(self):
-        self.url = reverse('registration_register')
-        self.response_get = self.client.get(self.url)
+        url = reverse('registration_register')
+        self.response = self.client.get(url)
 
     def test_register_template(self):
-        self.assertEqual(self.response_get.status_code, 200)
-        self.assertTemplateUsed(self.response_get, 'registration/registration_form.html')
-        self.assertContains(self.response_get, 'open an account')
-        self.assertNotContains(self.response_get, 'Log Out')
+        self.assertEqual(self.response.status_code, 200)
+        self.assertTemplateUsed(self.response, 'registration/registration_form.html')
+        self.assertContains(self.response, 'open an account')
+        self.assertNotContains(self.response, 'Log Out')
 
     def test_register_form(self):
-        form = self.response_get.context.get('form')
+        form = self.response.context.get('form')
         self.assertIsInstance(form, UserCreationForm)
-        self.assertContains(self.response_get, 'csrfmiddlewaretoken')
+        self.assertContains(self.response, 'Already a user?')
 
 
 class RegistrationViewPostTests(TransactionTestCase):
@@ -206,7 +206,7 @@ class ActivationViewTests(TestCase):
         myclient = Client()
         myclient.post(
             reverse("registration_register"),
-            {
+            data={
                 'username':username,
                 'email':email,
                 'password1':password,
@@ -233,23 +233,23 @@ class ActivationViewTests(TestCase):
         user = User.objects.filter(username=username).first()
         profile = RegistrationProfile.objects.filter(user=user).first()
 
-        activation_response1 = self.activation_response(profile.activation_key)
+        response = self.activation_response(profile.activation_key)
 
         activated_user = User.objects.filter(username=username).first()
         self.assertTrue(activated_user.is_active)
         self.assertTrue(RegistrationProfile.objects.filter(user=activated_user).first().activated)
 
-        self.assertRedirects(activation_response1, reverse('auth_login'))
-        self.assertContains(activation_response1, 'Your account has been activated')
+        self.assertRedirects(response, reverse('auth_login'))
+        self.assertContains(response, 'Your account has been activated')
 
         """
         A logged in user is redirected to home page.
         """
-        self.client.login(username=username, password=password)
+        self.client.force_login(user)
 
-        activation_response2 = self.activation_response(profile.activation_key)
-        self.assertRedirects(activation_response2, reverse('home'))
-        self.assertContains(activation_response2, "Your account has been activated")
+        response = self.activation_response(profile.activation_key)
+        self.assertRedirects(response, reverse('home'))
+        self.assertContains(response, "Your account has been activated")
 
     def test_failed_activation(self):
         """
@@ -263,7 +263,7 @@ class ActivationViewTests(TestCase):
         user.save()
         profile = RegistrationProfile.objects.filter(user=user).first()
 
-        activation_response = self.activation_response(profile.activation_key)
-        self.assertEqual(activation_response.status_code, 200)
-        self.assertTemplateUsed(activation_response, 'registration/activate.html')
-        self.assertContains(activation_response, "try again")
+        response = self.activation_response(profile.activation_key)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'registration/activate.html')
+        self.assertContains(response, "try again")
