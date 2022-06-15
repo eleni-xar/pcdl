@@ -2,6 +2,7 @@ from django.urls import path
 from .views import (
     ActivationView,
     LoginView,
+    RegistrationCompleteView,
     RegistrationView,
     PasswordChangeView,
     PasswordResetConfirmView,
@@ -13,7 +14,8 @@ from .views import (
 urlpatterns = [
     path('login/', LoginView.as_view(), name='auth_login'),
     path('register/', RegistrationView.as_view(), name='registration_register'),
-     path('activate/<activation_key>/',
+    path('register/complete/', RegistrationCompleteView.as_view(), name='registration_complete'),
+    path('activate/<activation_key>/',
          ActivationView.as_view(),
          name='registration_activate'),
     path('password/reset/', PasswordResetView.as_view(), name='auth_password_reset'),

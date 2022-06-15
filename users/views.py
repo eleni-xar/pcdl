@@ -9,7 +9,7 @@ from django.utils.decorators import method_decorator
 from django.views.decorators.cache import never_cache
 from django.views.decorators.csrf import csrf_protect
 from django.views.decorators.debug import sensitive_post_parameters
-from django.views.generic import DetailView, UpdateView, FormView
+from django.views.generic import DetailView, FormView, TemplateView, UpdateView
 from django.views.generic.detail import SingleObjectMixin
 from registration.backends.default import views as reg_views
 from registration.models import RegistrationProfile
@@ -103,6 +103,14 @@ class RegistrationView(reg_views.RegistrationView):
 
         return new_user
 
+class RegistrationCompleteView(TemplateView):
+
+    template_name = "registration/registration_complete.html"
+
+    def get(self, request, *args, **kwargs):
+        if request.user.is_authenticated:
+            return HttpResponseRedirect(reverse('home'))
+        return super().get(self, request, *args, **kwargs)
 
 class ActivationView(reg_views.ActivationView):
 

@@ -195,6 +195,26 @@ class RegistrationViewPostTests(TransactionTestCase):
         self.assertEqual(User.objects.all().count(), 1)
         self.assertContains(response2, 'already exists')
 
+class RegistrationCompleteViewTests(TestCase):
+
+    def test_registration_complete_template(self):
+        """
+        Uses correct template if user is not logged in
+        """
+        url = reverse('registration_complete')
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'registration/registration_complete.html')
+        self.assertContains(response, 'Thank you for signing up')
+
+        """
+        Redirects to home if user is logged in.
+        """
+        user = User.objects.create_user(username=username)
+        self.client.force_login(user)
+        response = self.client.get(url)
+        self.assertRedirects(response, reverse('home'))
+
 
 class ActivationViewTests(TestCase):
 
