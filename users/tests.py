@@ -205,7 +205,7 @@ class ActivationViewTests(TestCase):
         """
         myclient = Client()
         myclient.post(
-            reverse("register"),
+            reverse("registration_register"),
             {
                 'username':username,
                 'email':email,
