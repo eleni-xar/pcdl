@@ -165,6 +165,13 @@ class PasswordResetView(auth_views.PasswordResetView):
         form.save(**opts)
         return super(FormView, self).form_valid(form)
 
+class PasswordResetDoneView(auth_views.PasswordResetDoneView):
+
+    def get(self, request, *args, **kwargs):
+        if request.user.is_authenticated:
+            return HttpResponseRedirect(reverse('home'))
+        return super().get(self, request, *args, **kwargs)
+
 
 class PasswordResetConfirmView(auth_views.PasswordResetConfirmView):
 

@@ -441,3 +441,24 @@ class PasswordResetConfirmViewGetTests(TestCase):
         response = self.client.get(self.path, follow=True)
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "Invalid link")
+
+
+class PasswordResetDoneViewTests(TestCase):
+
+    def test_password_reset_done_template(self):
+        """
+        Uses correct template if user is not logged in
+        """
+        url = reverse('auth_password_reset_done')
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'registration/password_reset_done.html')
+        self.assertContains(response, 'We’ve emailed you instructions')
+
+        """
+        Redirects to home if user is logged in.
+        """
+        user = User.objects.create_user(username=username)
+        self.client.force_login(user)
+        response = self.client.get(url)
+        self.assertRedirects(response, reverse('home'))
