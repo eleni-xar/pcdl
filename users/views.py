@@ -6,6 +6,7 @@ from django.dispatch import receiver
 from django.http import HttpResponseRedirect
 from django.urls import reverse, reverse_lazy
 from django.utils.decorators import method_decorator
+from django.utils.html import mark_safe
 from django.views.decorators.cache import never_cache
 from django.views.decorators.csrf import csrf_protect
 from django.views.decorators.debug import sensitive_post_parameters
@@ -135,6 +136,19 @@ class PasswordResetView(auth_views.PasswordResetView):
 
     form_class = PasswordResetForm
     success_url = reverse_lazy('auth_password_reset_done')
+
+    @method_decorator(csrf_protect)
+    def dispatch(self, *args, **kwargs):
+        if self.request.user.is_authenticated:
+            messages.warning(
+                self.request,
+                mark_safe(
+                """
+                You are already logged in. If you wish you can <a href='{}'>change your password.</a>
+                """.format(reverse('auth_password_change')))
+            )
+            return HttpResponseRedirect(reverse('home'))
+        return super().dispatch(*args, **kwargs)
 
     def form_valid(self, form):
         opts = {

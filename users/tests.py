@@ -1,4 +1,5 @@
 from datetime import timedelta
+import re
 
 from django.contrib.auth import get_user_model
 from django.core import mail
@@ -6,7 +7,10 @@ from django.test import Client, TestCase, TransactionTestCase
 from django.urls import reverse, resolve
 from registration.models import RegistrationProfile
 
-from .forms import UserCreationForm
+from .forms import (
+    PasswordResetForm,
+    UserCreationForm,
+)
 from settings import settings
 
 User = get_user_model()
@@ -287,3 +291,82 @@ class ActivationViewTests(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'registration/activate.html')
         self.assertContains(response, "try again")
+
+
+class PasswordResetViewGetTests(TestCase):
+
+    def setUp(self):
+        self.url = reverse('auth_password_reset')
+        self.response = self.client.get(self.url)
+
+    def test_password_reset_template(self):
+        """
+        Returns the form to reset password if user is not logged in.
+        """
+        self.assertEqual(self.response.status_code, 200)
+        self.assertTemplateUsed(self.response, 'registration/password_reset_form.html')
+        self.assertContains(self.response, 'Reset my password')
+        form = self.response.context.get('form')
+        self.assertIsInstance(form, PasswordResetForm)
+
+        """
+        Logged in users are redirected to homepage.
+        """
+        user = User.objects.create_user(username=username)
+        self.client.force_login(user)
+        response = self.client.get(self.url, follow=True)
+        self.assertRedirects(response, reverse("home"))
+        self.assertContains(
+            response,
+            "<a href=\"{}\">change your password.</a>".format(
+                reverse('auth_password_change')
+            ),
+            html=True,
+        )
+
+class PasswordResetViewPostTests(TransactionTestCase):
+
+    def setUp(self):
+        self.url = reverse('auth_password_reset')
+        self.data = {"email": email}
+        user = User.objects.create_user(
+                                username=username,
+                                email=email,
+                                password=password,
+                            )
+
+    def test_wrong_email(self):
+        """
+        Error if email does not exist in database
+        """
+        response = self.client.post(
+            self.url,
+            data={"email": 'a' + email}
+        )
+        self.assertEqual(len(mail.outbox), 0)
+        self.assertTemplateUsed(response, 'registration/password_reset_form.html')
+        self.assertContains(response, "in our database")
+
+    def test_email_text_debug_false(self):
+        """
+        Check that email text has the correct domain when debug is False.
+        """
+        settings.DEBUG = False
+        response = self.client.post(
+            self.url,
+            self.data
+        )
+        self.assertEqual(len(mail.outbox), 1)
+        self.assertTrue(re.search('example.com/', mail.outbox[0].body))
+
+    def test_email_text_debug_true(self):
+        """
+        Check that email text uses local host when debug is True.
+        """
+        settings.DEBUG = True
+        response = self.client.post(
+            self.url,
+            data=self.data
+        )
+        self.assertEqual(len(mail.outbox), 1)
+        self.assertTrue(re.search('127.0.0.1:8000/', mail.outbox[0].body))
