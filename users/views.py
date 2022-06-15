@@ -1,8 +1,8 @@
-from django.contrib.auth import views as auth_views, get_user_model, REDIRECT_FIELD_NAME
+from django.contrib.auth import views as auth_views, get_user_model
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib import messages
 from django.contrib.messages.views import SuccessMessageMixin
 from django.contrib.sites.shortcuts import get_current_site
-from django.dispatch import receiver
 from django.http import HttpResponseRedirect
 from django.urls import reverse, reverse_lazy
 from django.utils.decorators import method_decorator
@@ -209,8 +209,7 @@ class ProfileMixin(SingleObjectMixin):
         return self.request.user
 
 
-
-class UserDetailView(ProfileMixin, DetailView):
+class UserDetailView(LoginRequiredMixin, ProfileMixin, DetailView):
 
     model = get_user_model()
 
@@ -224,7 +223,7 @@ class UserDetailView(ProfileMixin, DetailView):
         return context
 
 
-class UserUpdateView(ProfileMixin, SuccessMessageMixin, UpdateView):
+class UserUpdateView(LoginRequiredMixin, ProfileMixin, SuccessMessageMixin, UpdateView):
 
     form_class = UserProfileForm
     success_message = 'Your profile has been updated.'
