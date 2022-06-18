@@ -3,7 +3,7 @@ import re
 
 from django.contrib.auth import get_user_model
 from django.core import mail
-from django.test import Client, TestCase, TransactionTestCase
+from django.test import Client, override_settings, TestCase, TransactionTestCase
 from django.urls import reverse, resolve
 from registration.models import RegistrationProfile
 
@@ -14,7 +14,7 @@ from .forms import (
     UserCreationForm,
     UserProfileForm,
 )
-from settings import settings
+from django.conf import settings
 
 User = get_user_model()
 
@@ -354,7 +354,6 @@ class PasswordResetViewPostTests(TransactionTestCase):
         """
         Check that email text has the correct domain when debug is False.
         """
-        settings.DEBUG = False
         response = self.client.post(
             self.url,
             self.data
@@ -362,11 +361,11 @@ class PasswordResetViewPostTests(TransactionTestCase):
         self.assertEqual(len(mail.outbox), 1)
         self.assertTrue(re.search('example.com/', mail.outbox[0].body))
 
+    @override_settings(DEBUG=True)
     def test_email_text_debug_true(self):
         """
         Check that email text uses local host when debug is True.
         """
-        settings.DEBUG = True
         response = self.client.post(
             self.url,
             data=self.data

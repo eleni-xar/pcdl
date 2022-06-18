@@ -16,7 +16,7 @@ from registration.backends.default import views as reg_views
 from registration.models import RegistrationProfile
 from registration import signals
 
-from settings import settings
+from django.conf import settings
 from .forms import (
     PasswordChangeForm,
     PasswordResetForm,
