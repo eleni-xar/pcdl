@@ -1,5 +1,5 @@
 """
-Django settings for Peling Chokhor Digital Library
+Django settings for Peling Chhokhor Digital Library
 """
 
 import os
@@ -151,7 +151,7 @@ STATICFILES_FINDERS = [
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-SITE_NAME = 'Peling Chokhor'
+SITE_NAME = 'Peling Chhokhor'
 
 SITE_ID = 1
 
