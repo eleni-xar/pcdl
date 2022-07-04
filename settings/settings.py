@@ -35,10 +35,12 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.sites',
+    "django.forms",
 
     # Third party
     "crispy_forms",
     "crispy_bootstrap5",
+    "simple_history",
 
     # Local
     "users.apps.UsersConfig",
@@ -54,6 +56,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'simple_history.middleware.HistoryRequestMiddleware',
 ]
 
 ROOT_URLCONF = 'settings.urls'
@@ -75,6 +78,8 @@ TEMPLATES = [
         },
     },
 ]
+
+FORM_RENDERER = "django.forms.renderers.TemplatesSetting"
 
 WSGI_APPLICATION = 'settings.wsgi.application'
 
@@ -179,3 +184,11 @@ EMAIL_PORT = '1025'
 DEFAULT_FROM_EMAIL = "webmaster@localhost"
 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+
+# History
+
+SIMPLE_HISTORY_REVERT_DISABLED=True
+
+# Security
+
+SECURE_CONTENT_TYPE_NOSNIFF = True

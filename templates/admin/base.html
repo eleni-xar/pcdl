@@ -109,8 +109,36 @@ body {
     margin: 0px 0px 5px 0px;
 }
 
+:disabled{
+    opacity: 0.5;
+}
 
+#history-list  {
+    padding: 12px 14px 7px;
+    text-align: right;
+    overflow: hidden;
+}
 
+#history-list a.closelink {
+    display: inline-block;
+    background: var(--close-button-bg);
+    border-radius: 4px;
+    padding: 10px 15px;
+    height: 15px;
+    line-height: 15px;
+    margin: 0 0 0 5px;
+    color: #fff;
+}
+
+#history-list a.closelink:focus,
+#history-list a.closelink:hover,
+#history-list a.closelink:active {
+    background: var(--close-button-hover-bg);
+}
+
+#change-history{
+  margin-bottom:20px;
+}
 
 
 </style>

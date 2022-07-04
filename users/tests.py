@@ -389,8 +389,7 @@ class PasswordResetConfirmViewGetTests(TestCase):
                                 email=email,
                                 password=password,
                             )
-        myclient = Client()
-        myclient.post(
+        self.client.post(
             reverse("auth_password_reset"),
             data={'email':email}
         )
