@@ -17,3 +17,40 @@ form.text-below {
   font-weight: 300;
   font-size: 1.5rem;
 }
+
+.table-sortable th {
+    padding-right: 1.5em;
+    position: relative;
+}
+.table-sortable > a {
+    cursor: pointer;
+}
+
+.table-sortable th.orderable > a::after {
+    font-family: "Font Awesome 5 Pro", FontAwesome;
+    font-weight: 900;
+    content: "\f0dc";
+    position: absolute;
+    right: 1em;
+    top: 0.4em;
+    color: #ddd;
+}
+
+.table-sortable th.orderable.asc > a::after {
+    content: "\f0d8";
+    color: #333;
+}
+
+.table-sortable th.orderable.desc > a::after {
+    content: "\f0d7";
+    color: #333;
+}
+
+.table-sortable th.orderable > a:hover::after {
+    color: #333;
+}
+
+.table-responsive{
+  width: 100%;
+  overflow-x: auto;
+}

@@ -274,3 +274,96 @@ class PageTests(TestCase):
         # This is present only if reverting is enabled
         self.assertNotContains(response, "Choose an entry from the list below")
 
+
+class PageViewTests(TestCase):
+
+    @classmethod
+    @override_settings(MEDIA_ROOT=dir + '/')
+    def setUpTestData(cls):
+        with open("pcdl_docs/test_pdf.pdf", 'rb') as f:
+            wrapped_file = File(f)
+            cls.page1 = Page.objects.create(
+                page_no=23,
+                volume_no=12,
+                scanned_text=wrapped_file,
+            )
+        cls.page1.type = Page.TYPE_SCANNED
+        cls.page1.save()
+        with open("pcdl_docs/test_pdf.pdf", 'rb') as f:
+            wrapped_file = File(f)
+            cls.page2 = Page.objects.create(
+                page_no=23,
+                volume_no=12,
+                typed_text=wrapped_file,
+            )
+        cls.page2.type = Page.TYPE_TYPED
+        cls.page2.save()
+        with open("pcdl_docs/test_pdf.pdf", 'rb') as f:
+            wrapped_file = File(f)
+            cls.page3 = Page.objects.create(
+                page_no=35,
+                volume_no=12,
+                scanned_text=wrapped_file,
+            )
+        cls.page3.type = Page.TYPE_SCANNED
+        cls.page3.save()
+        with open("pcdl_docs/test_pdf.pdf", 'rb') as f:
+            wrapped_file = File(f)
+            cls.page4 = Page.objects.create(
+                page_no=36,
+                volume_no=14,
+                scanned_text=wrapped_file,
+            )
+        cls.page4.type = Page.TYPE_SCANNED
+        cls.page4.save()
+        cls.superuser = get_user_model().objects.create_superuser(username="su_test")
+        cls.user = get_user_model().objects.create_user(username="test")
+
+    def test_page_list_view_superuser(self):
+        """
+        Superuser can see and filter comments, and types. They see all pages.
+        """
+        self.client.force_login(self.superuser)
+        response = self.client.get(reverse("page_list"))
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, "books/page_list.html")
+        self.assertContains(response, "23")
+        self.assertContains(response, "Upload number")
+        self.assertContains(response, "Comments contain")
+        self.assertContains(response, "Total: 4")
+
+
+    def test_page_list_view_regular_user(self):
+        """
+        Regular uuser cannot see and filter comments, and types. They do not see duplicates.
+        """
+        self.client.force_login(self.user)
+        response = self.client.get(reverse("page_list"))
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, "books/page_list.html")
+        self.assertContains(response, "23")
+        self.assertNotContains(response, "Upload number")
+        self.assertNotContains(response, "Comments contain")
+        self.assertContains(response, "Total: 3")
+
+    def test_page_filter(self):
+        """
+        Returns error when format of input is wrong
+        """
+        self.client.force_login(self.superuser)
+        response = self.client.get(reverse("page_list") + "?page_no=a")
+        self.assertContains(response, "Values must be a range or separate page numbers")
+        response = self.client.get(reverse("page_list") + "?page_no=22-a")
+        self.assertContains(response, "Values must be a range or separate page numbers")
+        response = self.client.get(reverse("page_list") + "?page_no=a-24")
+        self.assertContains(response, "Values must be a range or separate page numbers")
+        response = self.client.get(reverse("page_list") + "?page_no=22-24%2Ca")
+        self.assertContains(response, "Values must be a range or separate page numbers")
+        response = self.client.get(reverse("page_list") + "?page_no=22;24")
+        self.assertContains(response, "Values must be a range or separate page numbers")
+        response = self.client.get(reverse("page_list") + "?page_no=22.24")
+        self.assertContains(response, "Values must be a range or separate page numbers")
+        response = self.client.get(reverse("page_list") + "?page_no=23-35")
+        # correct number of results when input is right
+        self.assertContains(response, "Total: 3")
+

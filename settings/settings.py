@@ -41,6 +41,8 @@ INSTALLED_APPS = [
     "crispy_forms",
     "crispy_bootstrap5",
     "simple_history",
+    "django_tables2",
+    "django_filters",
 
     # Local
     "users.apps.UsersConfig",

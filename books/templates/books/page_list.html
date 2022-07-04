@@ -1,0 +1,45 @@
+{% extends "site_base.html" %}
+
+{% load render_table from django_tables2 %}
+{% load export_url from django_tables2 %}
+{% load crispy_forms_tags %}
+
+{% block head_title %}Content{% endblock head_title %}
+
+{% block content %}
+  <div id="filters" class="card mb-5 pb-0 pt-1%}">
+    <div class="card-body">
+      <form id="filter-form" class="mb-2">
+          <div class="row">
+              {% crispy filter.form filter.helper %}
+          </div>
+          <div class="row align-items-center">
+            <div class="col-auto">
+              <button type="submit" class="btn btn-secondary">Filter</button>
+            </div>
+            <div class="col-auto me-auto">
+              <a class="btn my-btn-light" href="?per_page={% if view.request.GET.per_page %}{{ view.request.GET.per_page }}{% else %}100{% endif %}">Reset</a>
+            </div>
+            <div class="col-auto">
+              <div class="dropdown">
+                <button class="btn my-btn-light dropdown-toggle" type="button" id="dropdownPerPageMenu" data-bs-toggle="dropdown" aria-expanded="false">
+                  Items per page
+                </button>
+                <ul class="dropdown-menu" aria-labelledby="dropdownPerPageMenu">
+                  <li><a class="dropdown-item" href="?{% for key,value in request.GET.items %}{% if not key == 'per_page' %}&amp;{{key}}={{value}}{% endif %}{% endfor %}&amp;per_page=50">50</a></li>
+                  <li><a class="dropdown-item" href="?{% for key,value in request.GET.items %}{% if not key == 'per_page' %}&amp;{{key}}={{value}}{% endif %}{% endfor %}&amp;per_page=100"">100</a></li>
+                  <li><a class="dropdown-item" href="?{% for key,value in request.GET.items %}{% if not key == 'per_page' %}&amp;{{key}}={{value}}{% endif %}{% endfor %}&amp;per_page=250"">250</a></li>
+                </ul>
+              </div>
+            </div>
+          </div>
+      </form>
+    </div>
+  </div>
+  <div>
+      <div class="table-responsive">
+          {% render_table table %}
+      </div>
+    </div>
+
+{% endblock content %}

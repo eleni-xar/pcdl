@@ -1,4 +1,5 @@
 import magic
+import re
 
 from django.core.exceptions import ValidationError
 from django.template.defaultfilters import filesizeformat
@@ -41,3 +42,23 @@ class FileValidator(object):
             self.max_size == other.max_size and
             self.content_types == other.content_types
         )
+
+def validate_page_filter(value):
+
+    assert value is None or isinstance(value, list)
+
+    possible_value_re = re.compile("^\d+(-\d+)?$")
+    valid_values = True
+
+    for v in value:
+        v = v.strip()
+        if not re.match(possible_value_re, v):
+            valid_values = False
+            break
+
+    if not valid_values:
+        raise ValidationError(
+            "Values must be a range or separate page numbers. E.g. 5, 10-14, 35", code="invalid"
+        )
+    else:
+        return value

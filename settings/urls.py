@@ -12,6 +12,7 @@ urlpatterns = [
 
     # Core
     path('', include('core.urls')),
+    path('pcdl/content/', include('books.urls')),
 ]
 
 if settings.DEBUG:
