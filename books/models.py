@@ -159,6 +159,48 @@ class Page(models.Model):
                 )
         return super().clean()
 
+    def get_absolute_url(self):
+        return reverse("page_detail", args=[str(self.volume_no), str(self.page_no), self.type])
+
+
+    def find_next_page(self, is_staff=False):
+        """
+        skip typed text for regular users if a scanned version exists
+        """
+        if is_staff and self.type == self.TYPE_SCANNED:
+            same_page = Page.objects.filter(volume_no=self.volume_no, page_no=self.page_no, type=self.TYPE_TYPED).first()
+            if same_page:
+                return same_page
+        next_page_same_volume = Page.objects.filter(volume_no=self.volume_no, page_no__gt=self.page_no).first()
+        next_page_other_volume =  Page.objects.filter(volume_no__gt=self.volume_no).first()
+        return (
+            next_page_same_volume if next_page_same_volume
+            else next_page_other_volume if next_page_other_volume
+            else None
+        )
+
+    def find_previous_page(self, is_staff=False):
+        """
+        skip typed text for regular users if a scanned version exists
+        """
+        if is_staff and self.type == self.TYPE_TYPED:
+            same_page = Page.objects.filter(volume_no=self.volume_no, page_no=self.page_no, type=self.TYPE_SCANNED).first()
+            if same_page:
+                return same_page
+        previous_page_same_volume = Page.objects.filter(volume_no=self.volume_no, page_no__lt=self.page_no)
+        previous_page_other_volume =  Page.objects.filter(volume_no__lt=self.volume_no)
+        if is_staff:
+            return (
+                previous_page_same_volume.last() if previous_page_same_volume
+                else previous_page_other_volume.last() if previous_page_other_volume
+                else None
+            )
+        else:
+            return (
+                previous_page_same_volume.order_by("volume_no", "page_no", "-type").last() if previous_page_same_volume
+                else previous_page_other_volume.order_by("volume_no", "page_no", "-type").last() if previous_page_other_volume
+                else None
+            )
 
 
 @receiver(models.signals.pre_delete, sender=Page)

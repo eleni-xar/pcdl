@@ -50,7 +50,43 @@ form.text-below {
     color: #333;
 }
 
+span.invalid-feedback {
+  display: inline;
+}
+
 .table-responsive{
   width: 100%;
   overflow-x: auto;
+}
+
+a.next >i {
+  font-size: 400%;
+  color: #dddddd;
+  position: absolute;
+  top: 50%;
+  right: 1rem;
+  z-index: 2;
+}
+
+a.previous >i {
+  font-size: 400%;
+  color: #dddddd;
+  position: absolute;
+  top: 50%;
+  left: 0.4rem;
+  z-index: 2;
+}
+
+
+
+@media (min-width: 1350px){
+  a.next >i {
+    right: 2%;
+  }
+}
+
+@media (min-width: 1350px){
+  a.previous >i {
+    left: 2%;
+  }
 }

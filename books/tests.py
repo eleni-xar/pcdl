@@ -367,3 +367,56 @@ class PageViewTests(TestCase):
         # correct number of results when input is right
         self.assertContains(response, "Total: 3")
 
+    def test_page_detail_view(self):
+        self.client.force_login(self.superuser)
+        response = self.client.get(reverse("page_detail", args=["12", "23", "Scanned"]))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "volume_12_page_23_scanned")
+        self.assertTemplateUsed(response, "books/page_detail.html")
+        # first page points to next but not previous page
+        self.assertNotContains(response, 'class="previous"')
+        self.assertContains(response, 'class="next"')
+        # last page points to previous but not next page
+        response = self.client.get(reverse("page_detail", args=["14", "36", "Scanned"]))
+        self.assertContains(response, 'class="previous"')
+        self.assertNotContains(response, 'class="next"')
+
+    def test_next_page(self):
+        # superuser gets next page, user skips typed page if scanned content exists
+        next_page = self.page1.find_next_page(is_staff=True)
+        self.assertEqual(next_page, self.page2)
+        next_page = self.page1.find_next_page()
+        self.assertEqual(next_page, self.page3)
+        # next page of typed texted is same for all users;
+        # also next page is in same volume
+        next_page = self.page2.find_next_page(is_staff=True)
+        self.assertEqual(next_page, self.page3)
+        self.assertEqual(next_page, self.page2.find_next_page())
+        # next page is in other volume
+        next_page = self.page3.find_next_page(is_staff=True)
+        self.assertEqual(next_page, self.page4)
+        self.assertEqual(next_page, self.page3.find_next_page())
+        # there is no next page
+        next_page = self.page4.find_next_page(is_staff=True)
+        assert not next_page
+        self.assertEqual(next_page, self.page4.find_next_page())
+
+
+    def test_previous_page(self):
+        # there is no previous page
+        previous_page = self.page1.find_previous_page(is_staff=True)
+        assert not previous_page
+        self.assertEqual(previous_page, self.page1.find_previous_page())
+        # superuser gets same page scanned text
+        previous_page = self.page2.find_previous_page(is_staff=True)
+        self.assertEqual(previous_page, self.page1)
+        # superuser gets previous page, user skips typed page if scanned content exists
+        # also previous page in same volume
+        previous_page = self.page3.find_previous_page(is_staff=True)
+        self.assertEqual(previous_page, self.page2)
+        previous_page = self.page3.find_previous_page()
+        self.assertEqual(previous_page, self.page1)
+        # previous page in other volume
+        previous_page = self.page4.find_previous_page(is_staff=True)
+        self.assertEqual(previous_page, self.page3)
+        self.assertEqual(previous_page, self.page4.find_previous_page())

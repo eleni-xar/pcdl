@@ -15,7 +15,7 @@
           {% if user.is_authenticated %}
             <li class="nav-item"><a class="nav-link text-nowrap" href="{% url 'page_list' %}">Browse</a></li>
             {% if user.is_staff %}
-              <li class="nav-item"><a class="nav-link text-nowrap" href="{% url 'admin:books_page_changelist' %}">Upload</a></li>
+              <li class="nav-item"><a class="nav-link text-nowrap" href="{% url 'admin:books_page_changelist' %}">Edit Content</a></li>
             {% endif %}
           {% endif %}
         </ul>

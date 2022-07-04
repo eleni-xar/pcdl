@@ -1,0 +1,22 @@
+{% extends "site_base.html" %}
+
+{% block extra_head %}
+  <script src="https://kit.fontawesome.com/b3149e0bec.js" crossorigin="anonymous"></script>
+{% endblock extra_head %}
+
+{% block head_title %}{{page}}{% endblock head_title %}
+
+{% block content %}
+  <div class="">
+    {% if next_page %}
+      <a class="next" href="{{ next_page.get_absolute_url }}"><i class="fa fa-chevron-right" aria-hidden="true"></i></a>
+    {% endif %}
+    {% if previous_page %}
+      <a class="previous" href="{{ previous_page.get_absolute_url }}"><i class="fas fa-chevron-left" aria-hidden="true"></i></a>
+    {% endif %}
+    <iframe src="
+      {% if page.type == page.TYPE_SCANNED %}{{page.scanned_text.url}}{% else %}{{page.typed_text.url}}{% endif %}"
+      style="min-height:100vh;width:100%;" frameborder="5">
+    </iframe>
+  </div>
+{% endblock content %}
