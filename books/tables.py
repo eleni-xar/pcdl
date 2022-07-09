@@ -24,10 +24,9 @@ class PageTableUser(tables.Table):
         }
 
     def render_page_no(self, record, value):
-        file_url = record.typed_text.url if record.type == "Typed" else record.scanned_text.url
         return mark_safe(
         "<a href='{}'>{}</a>".format(
-            file_url,
+            record.get_absolute_url(),
             value
         )
     )
