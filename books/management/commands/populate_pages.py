@@ -32,13 +32,15 @@ class Command(BaseCommand):
                     page_no=i+1,
                     volume_no=1,
                     type=Page.TYPE_TYPED,
-                    typed_text=wrapped_file
+                    typed_text=wrapped_file,
+                    version_no=1
                 )
                 Page.objects.create(
                     page_no=i+1,
                     volume_no=1,
                     type=Page.TYPE_SCANNED,
-                    scanned_text=wrapped_file
+                    scanned_text=wrapped_file,
+                    version_no=1
                 )
             # 250 random pages with typed text
             for page_no, volume_no in page_typed_sample:
@@ -46,7 +48,8 @@ class Command(BaseCommand):
                     page_no=page_no,
                     volume_no=volume_no,
                     type=Page.TYPE_TYPED,
-                    typed_text=wrapped_file
+                    typed_text=wrapped_file,
+                    version_no=1
                 )
             # 250 random pages with scanned text
             for page_no, volume_no in page_scanned_sample:
@@ -54,5 +57,6 @@ class Command(BaseCommand):
                     page_no=page_no,
                     volume_no=volume_no,
                     type=Page.TYPE_SCANNED,
-                    scanned_text=wrapped_file
+                    scanned_text=wrapped_file,
+                    version_no=1
                 )
