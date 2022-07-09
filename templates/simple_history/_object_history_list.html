@@ -17,7 +17,7 @@
   </thead>
   <tbody>
     {% for action in action_list %}
-    {% if action.history_change_reason != action.prev_record.history_change_reason and action.history_change_reason != "No change." %}
+    {% if action.history_change_reason != action.previous_record_reason %}
       <tr>
         {% for column in history_list_display %}
         <td scope="col">{{ action|getattribute:column }}</td>

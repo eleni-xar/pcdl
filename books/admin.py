@@ -1,11 +1,12 @@
 from django.contrib import admin
 from django.core.exceptions import ValidationError
-from simple_history.admin import SimpleHistoryAdmin
+# from simple_history.admin import SimpleHistoryAdmin
 
 from .models import Page
 from .forms import PageForm
+from core.admin import CustomHistoryAdmin
 
-class PageAdmin(SimpleHistoryAdmin):
+class PageAdmin(CustomHistoryAdmin):
     list_display = ("page_no", "volume_no", "type", "comments")
     exclude = ("version_no",)
     history_list_display = ["type"]
