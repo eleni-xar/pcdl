@@ -1,3 +1,4 @@
+# Only for development
 version: "3.9"
 
 services:
@@ -13,21 +14,24 @@ services:
     environment:
       - "DJANGO_SECRET_KEY=django-insecure-#@1(+(!&8vm6x0q&u8rzo73x1h5ojq3@&14lmyv+lc#t7k0g^#"
       - "DJANGO_DEBUG=True"
+      - "PCDL_EMAIL_HOST="
+      - "PCDL_EMAIL_HOST_USER="
+      - "PCDL_EMAIL_HOST_PASSWORD="
   db:
     image: postgres:13
     volumes:
       - postgres_data:/var/lib/postgresql/data/
     environment:
       - "POSTGRES_HOST_AUTH_METHOD=trust"
-  smtp-server:
-    image: mailhog/mailhog
-    expose:
-      - 1025
-      - 8025
-    ports:
-      - '1025:1025'
-      - '8025:8025'
-    restart: always
+  # smtp-server:
+  #   image: mailhog/mailhog
+  #   expose:
+  #     - 1025
+  #     - 8025
+  #   ports:
+  #     - '1025:1025'
+  #     - '8025:8025'
+  #   restart: always
 
 volumes:
   postgres_data:
