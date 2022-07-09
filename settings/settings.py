@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     "simple_history",
     "django_tables2",
     "django_filters",
+    "debug_toolbar",
 
     # Local
     "users.apps.UsersConfig",
@@ -59,6 +60,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'simple_history.middleware.HistoryRequestMiddleware',
+    "debug_toolbar.middleware.DebugToolbarMiddleware",
 ]
 
 ROOT_URLCONF = 'settings.urls'
@@ -201,6 +203,12 @@ DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 # History
 
 SIMPLE_HISTORY_REVERT_DISABLED=True
+
+# django-debug-toolbar
+import socket
+
+hostname, _, ips = socket.gethostbyname_ex(socket.gethostname())
+INTERNAL_IPS = [ip[:-1] + "1" for ip in ips]
 
 # Security
 
