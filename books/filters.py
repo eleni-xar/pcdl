@@ -1,4 +1,5 @@
 from crispy_forms.helper import FormHelper
+from django.db.models import Exists, OuterRef
 from django_filters import CharFilter, ChoiceFilter, FilterSet
 from django import forms
 
@@ -25,7 +26,12 @@ class PageFilterUser(FilterSet):
 
     @property
     def qs(self):
-        return super().qs.distinct("volume_no", "page_no")
+        # return super().qs.distinct("volume_no", "page_no")
+        parent = super().qs
+        typed = parent.filter(type=Page.TYPE_TYPED)
+        scanned = parent.filter(type=Page.TYPE_SCANNED)
+        duplicates = typed.annotate(is_duplicate=Exists(scanned.filter(page_no=OuterRef("page_no"), volume_no=OuterRef("volume_no"))))
+        return scanned | duplicates.filter(is_duplicate=False)
 
 
 class PageFilterStaff(PageFilterUser):
