@@ -20,7 +20,7 @@ env.read_env()
 SECRET_KEY = env("DJANGO_SECRET_KEY")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = env.bool("DJANGO_DEBUG")
+DEBUG = env.bool("DJANGO_DEBUG", default=False)
 
 ALLOWED_HOSTS = ["localhost", "127.0.0.1"]
 
@@ -64,7 +64,7 @@ MIDDLEWARE = [
     "debug_toolbar.middleware.DebugToolbarMiddleware",
 ]
 
-ROOT_URLCONF = 'settings.urls'
+ROOT_URLCONF = 'pcdl.urls'
 
 TEMPLATES = [
     {
@@ -86,7 +86,7 @@ TEMPLATES = [
 
 FORM_RENDERER = "django.forms.renderers.TemplatesSetting"
 
-WSGI_APPLICATION = 'settings.wsgi.application'
+WSGI_APPLICATION = 'pcdl.wsgi.application'
 
 
 # Database
@@ -152,14 +152,14 @@ STATICFILES_DIRS = (os.path.join(BASE_DIR, 'static'),)
 
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
-STATICFILES_STORAGE = "django.contrib.staticfiles.storage.StaticFilesStorage"
+STATICFILES_STORAGE ="django.contrib.staticfiles.storage.StaticFilesStorage"
 
-STATICFILES_FINDERS = [
+STATICFILES_FINDERS = (
     "django.contrib.staticfiles.finders.FileSystemFinder",
     "django.contrib.staticfiles.finders.AppDirectoriesFinder",
     # other finders
     "compressor.finders.CompressorFinder",
-]
+)
 
 MEDIA_URL = "/media/"
 

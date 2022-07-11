@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.contrib.auth import views as auth_views, get_user_model
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib import messages
@@ -16,7 +17,6 @@ from registration.backends.default import views as reg_views
 from registration.models import RegistrationProfile
 from registration import signals
 
-from django.conf import settings
 from .forms import (
     PasswordChangeForm,
     PasswordResetForm,

@@ -1,6 +1,7 @@
 from datetime import timedelta
 import re
 
+from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.core import mail
 from django.test import Client, override_settings, TestCase, TransactionTestCase
@@ -14,7 +15,7 @@ from .forms import (
     UserCreationForm,
     UserProfileForm,
 )
-from django.conf import settings
+
 
 User = get_user_model()
 
