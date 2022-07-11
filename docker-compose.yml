@@ -14,6 +14,12 @@ services:
     environment:
       - "DJANGO_SECRET_KEY=django-insecure-#@1(+(!&8vm6x0q&u8rzo73x1h5ojq3@&14lmyv+lc#t7k0g^#"
       - "DJANGO_DEBUG=True"
+      - "DJANGO_SECURE_SSL_REDIRECT=False"
+      - "DJANGO_SECURE_HSTS_SECONDS=0"
+      - "DJANGO_SECURE_HSTS_INCLUDE_SUBDOMAINS=False"
+      - "DJANGO_SECURE_HSTS_PRELOAD=False"
+      - "DJANGO_SESSION_COOKIE_SECURE=False"
+      - "DJANGO_CSRF_COOKIE_SECURE=False"
       - "PCDL_EMAIL_HOST="
       - "PCDL_EMAIL_HOST_USER="
       - "PCDL_EMAIL_HOST_PASSWORD="
