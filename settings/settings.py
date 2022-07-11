@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     "django_tables2",
     "django_filters",
     "debug_toolbar",
+    "compressor",
 
     # Local
     "users.apps.UsersConfig",
@@ -155,7 +156,9 @@ STATICFILES_STORAGE = "django.contrib.staticfiles.storage.StaticFilesStorage"
 
 STATICFILES_FINDERS = [
     "django.contrib.staticfiles.finders.FileSystemFinder",
-    "django.contrib.staticfiles.finders.AppDirectoriesFinder"
+    "django.contrib.staticfiles.finders.AppDirectoriesFinder",
+    # other finders
+    "compressor.finders.CompressorFinder",
 ]
 
 MEDIA_URL = "/media/"
